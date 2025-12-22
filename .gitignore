@@ -10,7 +10,7 @@ target
 src/main/resources/application.properties
 .gitattributes
 .mvn
-
+.mvn/wrapper/maven-wrapper.properties
 ### STS ###
 .apt_generated
 .classpath
