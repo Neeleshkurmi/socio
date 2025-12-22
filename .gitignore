@@ -10,7 +10,8 @@ target
 src/main/resources/application.properties
 .gitattributes
 .mvn
-.mvn/wrapper/maven-wrapper.properties
+.mvn/wrapper/
+C:\Users\ACER\Desktop\Spring_Boot\socio\.mvn
 ### STS ###
 .apt_generated
 .classpath
