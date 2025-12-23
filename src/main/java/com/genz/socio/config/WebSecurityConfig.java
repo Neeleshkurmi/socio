@@ -19,25 +19,20 @@ public class WebSecurityConfig {
     private final PasswordEncoder passwordEncoder;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
         return httpSecurity
-                .authorizeHttpRequests
-                        (a -> a.requestMatchers("api/auth/**").permitAll()
-                        .requestMatchers("/**").hasAnyRole("ADMIN","USER"))
-                .formLogin(Customizer.withDefaults()).build();
+                .authorizeHttpRequests(auth-> auth
+                        .requestMatchers("/api/auth/**").permitAll())
+                .formLogin(Customizer.withDefaults())
+                .build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService(){
+    public UserDetailsService userDetailsService() {
         UserDetails user1 = User.withUsername("nilesh")
                 .password(passwordEncoder.encode("nilesh"))
                 .roles("USER").build();
 
-        UserDetails user2 = User.withUsername("admin")
-                .password(passwordEncoder.encode("admin"))
-                .roles("ADMIN").build();
-
-        return new InMemoryUserDetailsManager(user1,user2);
+        return new InMemoryUserDetailsManager(user1);
     }
 
 }
