@@ -7,7 +7,8 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class User extends BaseEntity{
 
     @Column(unique = true, nullable = false)

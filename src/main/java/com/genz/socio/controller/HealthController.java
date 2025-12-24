@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("health")
+@RequestMapping("/api/health")
 public class HealthController {
 
     @RequestMapping("/check")
     public ApiResponse<String> healthCheck(){
-        return new ApiResponse<String>(true,"application is working fine","Good Health");
+        return new ApiResponse<>(true,"application is working fine","Good Health");
     }
 }

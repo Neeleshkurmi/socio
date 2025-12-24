@@ -25,7 +25,7 @@ public class JwtService {
                 .claim("role", user.getRole().name())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expire))
-                .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.ES256)
+                .signWith(Keys.hmacShaKeyFor(secret.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
 
