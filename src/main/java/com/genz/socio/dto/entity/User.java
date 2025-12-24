@@ -25,4 +25,7 @@ public class User extends BaseEntity{
     private Role role;
 
     private boolean isVerified;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Profile profile;
 }
