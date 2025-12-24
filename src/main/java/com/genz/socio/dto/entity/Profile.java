@@ -23,8 +23,20 @@ public class Profile extends BaseEntity{
 
     private Long noOfPosts;
 
+    @ManyToMany
+    @JoinTable(
+            name = "profile_followers",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<User> followers;
 
+    @ManyToMany
+    @JoinTable(
+            name = "profile_following",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
     private List<User> following;
 
     @OneToOne

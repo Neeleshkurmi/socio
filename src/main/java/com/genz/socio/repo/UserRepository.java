@@ -12,6 +12,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findUserByEmailOrUserName(String emailOrUserName);
 
     User findByUserName(String userName);
-
-    void updateUserName(Long id, String newUserName);
 }

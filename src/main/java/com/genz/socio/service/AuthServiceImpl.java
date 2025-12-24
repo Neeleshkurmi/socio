@@ -6,6 +6,7 @@ import com.genz.socio.dto.enums.Role;
 import com.genz.socio.dto.request.LoginRequest;
 import com.genz.socio.dto.request.RegisterRequest;
 import com.genz.socio.dto.response.AuthResponse;
+import com.genz.socio.exception.BadRequestException;
 import com.genz.socio.exception.ResourceNotFoundException;
 import com.genz.socio.mapper.UserMapper;
 import com.genz.socio.repo.UserRepository;
@@ -42,6 +43,10 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     @Override
     public AuthResponse register(RegisterRequest request){
+        if (userRepository.findUserByEmailOrUserName(request.getEmailOrPhone()).isPresent()) {
+            throw new BadRequestException("User already exists");
+        }
+
         User user = new User();
         user.setUserName(request.getUserName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));

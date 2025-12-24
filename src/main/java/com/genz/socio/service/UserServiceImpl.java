@@ -67,6 +67,7 @@ public class UserServiceImpl implements UserService{
         User me = userRepository.findByUserName(userName);
 
         if(me!=null){
+            //TODO
             profileService.follow(user);
             return userMapper.toResponse(me);
         }

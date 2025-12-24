@@ -2,7 +2,10 @@ package com.genz.socio.dto.entity;
 
 import com.genz.socio.dto.enums.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Getter
@@ -12,13 +15,18 @@ import lombok.*;
 public class User extends BaseEntity{
 
     @Column(unique = true, nullable = false)
+    @NotBlank(message = "Email or phone is required")
     private String emailOrPhone;
 
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
+    @NotBlank(message = "Name is required")
     private String fullName;
 
     @Column(unique = true, nullable = false)
+    @NotBlank(message = "User Name must not be empty")
     private String userName;
 
     @Enumerated(EnumType.STRING)
