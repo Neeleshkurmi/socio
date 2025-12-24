@@ -5,9 +5,9 @@ import com.genz.socio.dto.request.RegisterRequest;
 import com.genz.socio.dto.response.ApiResponse;
 import com.genz.socio.dto.response.AuthResponse;
 
-public interface UserService {
+public interface AuthService {
 
-    ApiResponse<AuthResponse> saveUser(RegisterRequest request);
+    AuthResponse register(RegisterRequest request);
 
-    ApiResponse<AuthResponse> getUser(LoginRequest request);
+    AuthResponse login(LoginRequest request);
 }
