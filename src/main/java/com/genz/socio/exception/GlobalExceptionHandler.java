@@ -1,6 +1,7 @@
 package com.genz.socio.exception;
 
 import com.genz.socio.dto.response.ErrorResponse;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,11 +31,14 @@ public class GlobalExceptionHandler{
                 .body(new ErrorResponse(false, ex.getMessage(), "NOT_FOUND", LocalDateTime.now()));
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(
-            org.springframework.web.bind.MethodArgumentNotValidException ex) {
+            ConstraintViolationException ex) {
 
-        String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        String errorMessage = ex.getConstraintViolations()
+                .iterator()
+                .next()
+                .getMessage();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(false, errorMessage, "VALIDATION_FAILED", LocalDateTime.now()));
