@@ -1,6 +1,5 @@
 package com.genz.socio.controller;
 
-import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.request.LoginRequest;
 import com.genz.socio.dto.request.RegisterRequest;
 import com.genz.socio.dto.response.ApiResponse;
@@ -8,9 +7,6 @@ import com.genz.socio.dto.response.AuthResponse;
 import com.genz.socio.service.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthServiceImpl authService;
-    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest){

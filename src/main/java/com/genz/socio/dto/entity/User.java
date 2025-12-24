@@ -1,6 +1,5 @@
 package com.genz.socio.dto.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.genz.socio.dto.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +8,6 @@ import lombok.*;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@NoArgsConstructor
 public class User extends BaseEntity{
 
     @Column(unique = true, nullable = false)

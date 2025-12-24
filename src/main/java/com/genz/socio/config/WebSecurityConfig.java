@@ -1,5 +1,6 @@
 package com.genz.socio.config;
 
+import com.genz.socio.mapper.UserMapper;
 import com.genz.socio.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -38,6 +39,11 @@ public class WebSecurityConfig {
     @Bean
     public ModelMapper modelMapper(){
         return new ModelMapper();
+    }
+
+    @Bean
+    public UserMapper userMapper(){
+        return new UserMapper();
     }
 
     @Bean

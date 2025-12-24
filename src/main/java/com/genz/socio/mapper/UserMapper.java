@@ -5,7 +5,7 @@ import com.genz.socio.dto.response.UserResponse;
 
 public class UserMapper {
 
-    public static UserResponse toResponse(User user){
+    public UserResponse toResponse(User user){
         UserResponse userResponse = new UserResponse();
         userResponse.setUserName(user.getUserName());
         userResponse.setEmailOrPhone(user.getEmailOrPhone());
