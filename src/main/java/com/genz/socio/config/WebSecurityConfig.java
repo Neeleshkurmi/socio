@@ -1,42 +1,39 @@
 package com.genz.socio.config;
 
+import com.genz.socio.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final PasswordEncoder passwordEncoder;
+    private final JwtAuthenticationFilter jwtFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-                .authorizeHttpRequests(auth-> auth
-                        .requestMatchers("/api/auth/**").permitAll())
-                .formLogin(Customizer.withDefaults())
+                .csrf(c->c.disable())
+                .authorizeHttpRequests(auth->auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(se->se
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
-    public UserDetailsService userDetailsService() {
-        UserDetails user1 = User.withUsername("nilesh")
-                .password(passwordEncoder.encode("nilesh"))
-                .roles("USER").build();
-
-        return new InMemoryUserDetailsManager(user1);
-    }
-
 
     @Bean
     public ModelMapper modelMapper(){
