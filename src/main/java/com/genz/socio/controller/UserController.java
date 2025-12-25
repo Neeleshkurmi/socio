@@ -1,6 +1,9 @@
 package com.genz.socio.controller;
 
+import com.genz.socio.dto.request.UpdatePasswordRequest;
+import com.genz.socio.dto.request.UpdateUserNameRequest;
 import com.genz.socio.dto.response.ApiResponse;
+import com.genz.socio.dto.response.AuthResponse;
 import com.genz.socio.dto.response.UpdatePassword;
 import com.genz.socio.dto.response.UserResponse;
 import com.genz.socio.service.UserService;
@@ -20,15 +23,15 @@ public class UserController {
 
     @PostMapping("/change-password")
     public ApiResponse<UpdatePassword> changePassword(@RequestHeader("Authorization") String token,
-                                                      @RequestBody String newPassword, @RequestBody String prePassword){
+                                                      @RequestBody UpdatePasswordRequest update){
         logger.info("hitting the request change password");
         return new ApiResponse<>(true,"password changed"
-                ,userService.updatePassword(token,prePassword,newPassword));
+                ,userService.updatePassword(token,update));
     }
 
     @PostMapping("/change-username")
-    public ApiResponse<UserResponse> changeUserName(@RequestHeader("Authorization") String token,
-                                                    @RequestBody String newUserName){
+    public ApiResponse<AuthResponse> changeUserName(@RequestHeader("Authorization") String token,
+                                                    @RequestBody UpdateUserNameRequest newUserName){
         logger.info("hitting the request change username");
         return new ApiResponse<>(true, "user name changed"
                 ,userService.updateUserName(token,newUserName));

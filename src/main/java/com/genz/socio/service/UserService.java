@@ -1,18 +1,19 @@
 package com.genz.socio.service;
 
 import com.genz.socio.dto.entity.User;
+import com.genz.socio.dto.request.UpdatePasswordRequest;
+import com.genz.socio.dto.request.UpdateUserNameRequest;
+import com.genz.socio.dto.response.AuthResponse;
 import com.genz.socio.dto.response.UpdatePassword;
 import com.genz.socio.dto.response.UserResponse;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 public interface UserService {
 
-    UserResponse updateUserName(@RequestHeader String token, @RequestBody String newUserName);
+    AuthResponse updateUserName(String token, UpdateUserNameRequest update);
 
-    UpdatePassword updatePassword(@RequestHeader String token, @RequestBody String prePassword, String newPassword);
+    UpdatePassword updatePassword(String token,  UpdatePasswordRequest update);
 
-    UserResponse updateEmail(@RequestHeader String token, @RequestBody String email);
+    UserResponse updateEmail(String token,  String email);
 
-    UserResponse follow(@RequestHeader String token, @RequestBody User user);
+    UserResponse follow( String token,  User user);
 }

@@ -21,7 +21,7 @@ public class JwtService {
 
     public String generateToken(User user){
         return Jwts.builder()
-                .setSubject(user.getEmailOrPhone())
+                .setSubject(user.getUserName())
                 .claim("role", user.getRole().name())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expire))
@@ -42,6 +42,7 @@ public class JwtService {
     }
 
     private Claims getClaims(String jwt) {
+        jwt = (jwt != null && jwt.startsWith("Bearer ")) ? jwt.substring(7) : jwt;
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
                 .build()
