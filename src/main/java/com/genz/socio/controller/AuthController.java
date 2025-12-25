@@ -4,6 +4,7 @@ import com.genz.socio.dto.request.LoginRequest;
 import com.genz.socio.dto.request.RegisterRequest;
 import com.genz.socio.dto.response.ApiResponse;
 import com.genz.socio.dto.response.AuthResponse;
+import com.genz.socio.dto.response.UserResponse;
 import com.genz.socio.service.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest){
-        return new ApiResponse<>(true, "Login Successful",authService.login(loginRequest));
+        AuthResponse user = authService.login(loginRequest);
+        if(user!=null){
+            return new ApiResponse<>(true, "Login Successful",user);
+        }
+        return new ApiResponse<>(false, "Login Successful",null);
     }
 
     @PostMapping("/register")

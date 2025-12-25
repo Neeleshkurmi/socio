@@ -24,6 +24,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserResponse updateUserName(String token, String newUserName) {
         String userName = jwtService.extractUserName(token);
+        System.out.println("error is after this line");
 
         User user = userRepository.findByUserName(userName);
 

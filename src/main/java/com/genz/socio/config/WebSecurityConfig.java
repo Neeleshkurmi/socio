@@ -27,6 +27,7 @@ public class WebSecurityConfig {
                 .csrf(c->c.disable())
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/api/auth/**","/api/health/check").permitAll()
+                        .requestMatchers("/api/user/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(se->se
