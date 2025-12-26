@@ -1,9 +1,11 @@
 package com.genz.socio.service;
 
 
+import com.genz.socio.dto.entity.Profile;
 import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.enums.Role;
 import com.genz.socio.dto.request.LoginRequest;
+import com.genz.socio.dto.request.ProfileRequest;
 import com.genz.socio.dto.request.RegisterRequest;
 import com.genz.socio.dto.response.AuthResponse;
 import com.genz.socio.exception.BadRequestException;
@@ -25,6 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final ProfileService profileService;
 
     @Transactional
     @Override
@@ -53,10 +56,13 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(Role.USER);
         user.setEmailOrPhone(request.getEmailOrPhone());
         user.setFullName(request.getFullName());
+        user.setProfile(new Profile());
 
         userRepository.save(user);
 
         String token = jwtService.generateToken(user);
+
+        profileService.createProfile(token,new ProfileRequest());
 
         return new AuthResponse(token, userMapper.toResponse(user));
     }

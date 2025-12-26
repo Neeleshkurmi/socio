@@ -29,24 +29,24 @@ public class JwtService {
                 .compact();
     }
 
-    public String extractUserName(String jwt){
-        return getClaims(jwt).getSubject();
+    public String extractUserName(String authorization){
+        return getClaims(authorization).getSubject();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails){
-        return extractUserName(token).equals(userDetails.getUsername()) && !isExpiredToken(token);
+    public boolean isTokenValid(String athorization, UserDetails userDetails){
+        return extractUserName(athorization).equals(userDetails.getUsername()) && !isExpiredToken(athorization);
     }
 
-    private boolean isExpiredToken(String token) {
-        return getClaims(token).getExpiration().before(new Date());
+    private boolean isExpiredToken(String authorization) {
+        return getClaims(authorization).getExpiration().before(new Date());
     }
 
-    private Claims getClaims(String jwt) {
-        jwt = (jwt != null && jwt.startsWith("Bearer ")) ? jwt.substring(7) : jwt;
+    private Claims getClaims(String authorization) {
+        authorization = (authorization != null && authorization.startsWith("Bearer ")) ? authorization.substring(7) : authorization;
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes()))
                 .build()
-                .parseClaimsJws(jwt)
+                .parseClaimsJws(authorization)
                 .getBody();
     }
 }
