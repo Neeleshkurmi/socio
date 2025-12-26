@@ -16,11 +16,13 @@ public class ProfileController {
 
     @GetMapping("/")
     public ApiResponse<ProfileResponse> getProfile(@RequestHeader String token){
+        System.out.println("DEBUG inside follow");
         return new ApiResponse<>(true,"user profile",profileService.getProfile(token));
     }
 
     @PostMapping
     public ApiResponse<ProfileResponse> follow(@RequestHeader String token, @RequestBody User following){
+        System.out.println("DEBUG inside follow");
         return new ApiResponse<>(true,"user profile",profileService.follow(following,token));
     }
 }

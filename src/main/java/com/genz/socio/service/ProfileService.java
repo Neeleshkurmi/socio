@@ -28,6 +28,11 @@ public class ProfileService {
 
         Profile profile = user.getProfile();
         profile.getFollowing().add(following);
+        profileRepository.save(profile);
+
+        Profile profile1 = following.getProfile();
+        profile1.getFollowers().add(user);
+        profileRepository.save(profile1);
 
         return modelMapper.map(profile,ProfileResponse.class);
     }
