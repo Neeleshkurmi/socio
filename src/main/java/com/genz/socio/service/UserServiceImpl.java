@@ -4,6 +4,7 @@ import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.request.UpdatePasswordRequest;
 import com.genz.socio.dto.request.UpdateUserNameRequest;
 import com.genz.socio.dto.response.AuthResponse;
+import com.genz.socio.dto.response.ProfileResponse;
 import com.genz.socio.dto.response.UpdatePassword;
 import com.genz.socio.dto.response.UserResponse;
 import com.genz.socio.exception.ResourceNotFoundException;
@@ -11,6 +12,7 @@ import com.genz.socio.mapper.UserMapper;
 import com.genz.socio.repo.UserRepository;
 import com.genz.socio.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService{
 
+    private final ModelMapper modelMapper;
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final UserMapper userMapper;
@@ -28,10 +31,9 @@ public class UserServiceImpl implements UserService{
     @Override
     public AuthResponse updateUserName(String token, UpdateUserNameRequest update) {
         String userName = jwtService.extractUserName(token);
-        System.out.println("error is after this line");
 
         User user = userRepository.findByUserName(userName).orElseThrow(()->
-                new ResourceNotFoundException("user not found"));
+                new ResourceNotFoundException("Resource not found"));
 
         if(user!=null){
             user.setUserName(update.getUserName());
@@ -39,7 +41,7 @@ public class UserServiceImpl implements UserService{
             String newToken = jwtService.generateToken(user);
             return new AuthResponse(newToken, userMapper.toResponse(user));
         }
-        throw new UsernameNotFoundException("User Not Found");
+        throw new UsernameNotFoundException("user Not Found");
     }
 
     @Override
@@ -59,6 +61,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponse updateEmail(String token, String email) {
+
+        //TODO --- instead of taking String email create one request dto
         String userName = jwtService.extractUserName(token);
 
         User user = userRepository.findByUserName(userName).orElseThrow(()->
@@ -73,17 +77,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserResponse follow(String token, User user) {
-        String userName = jwtService.extractUserName(token);
-
-        User me = userRepository.findByUserName(userName).orElseThrow(()->
-                new ResourceNotFoundException("user not found"));
-
-        if(me!=null){
-            //TODO
-            profileService.follow(user);
-            return userMapper.toResponse(me);
-        }
-        throw  new UsernameNotFoundException("User Not Found");
+    public ProfileResponse follow(String token, User following) {
+        return modelMapper.map(profileService.follow(following, token),ProfileResponse.class);
     }
 }

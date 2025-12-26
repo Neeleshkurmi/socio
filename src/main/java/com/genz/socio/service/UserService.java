@@ -4,6 +4,7 @@ import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.request.UpdatePasswordRequest;
 import com.genz.socio.dto.request.UpdateUserNameRequest;
 import com.genz.socio.dto.response.AuthResponse;
+import com.genz.socio.dto.response.ProfileResponse;
 import com.genz.socio.dto.response.UpdatePassword;
 import com.genz.socio.dto.response.UserResponse;
 
@@ -15,5 +16,5 @@ public interface UserService {
 
     UserResponse updateEmail(String token,  String email);
 
-    UserResponse follow( String token,  User user);
+    ProfileResponse follow(String token, User user);
 }
