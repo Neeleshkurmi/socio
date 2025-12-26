@@ -4,7 +4,9 @@ import com.genz.socio.dto.enums.Title;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class Profile extends BaseEntity{
             joinColumns = @JoinColumn(name = "profile_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> followers;
+    private Set<User> followers = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -37,7 +39,7 @@ public class Profile extends BaseEntity{
             joinColumns = @JoinColumn(name = "profile_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> following;
+    private Set<User> following = new HashSet<>();
 
     @OneToOne
     @JoinColumn(name="user_id", referencedColumnName = "id")

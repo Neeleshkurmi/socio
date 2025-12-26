@@ -14,6 +14,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 @Service
 @RequiredArgsConstructor
 public class ProfileService {
@@ -24,26 +27,30 @@ public class ProfileService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public ProfileResponse follow(Long  id, String token) {
+    public ProfileResponse follow(Long id, String token) {
         String userName = jwtService.extractUserName(token);
 
-        User  user1 = userRepository.findByUserName(userName).orElseThrow(()->
-                new ResourceNotFoundException("user not found"));
+        User user1 = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        User user2 = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("profile not exits"));
+        User user2 = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile to follow does not exist"));
 
         Profile u1Profile = user1.getProfile();
         Profile u2Profile = user2.getProfile();
 
-        u1Profile.getFollowing().add(user2);
-        u2Profile.getFollowers().add(user1);
+        if (u1Profile.getFollowing() == null) u1Profile.setFollowing(new HashSet<>());
+        if (u2Profile.getFollowers() == null) u2Profile.setFollowers(new HashSet<>());
 
+        if (!u1Profile.getFollowing().contains(user2)) {
+            u1Profile.getFollowing().add(user2);
+            u2Profile.getFollowers().add(user1);
 
-        profileRepository.save(u1Profile);
-        profileRepository.save(u2Profile);
+            profileRepository.save(u1Profile);
+            profileRepository.save(u2Profile);
+        }
 
-
-        return modelMapper.map(user1.getProfile(),ProfileResponse.class);
+        return modelMapper.map(u1Profile, ProfileResponse.class);
     }
 
     public ProfileResponse getProfile(String token) {
