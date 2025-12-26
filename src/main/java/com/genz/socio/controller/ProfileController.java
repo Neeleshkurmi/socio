@@ -21,15 +21,15 @@ public class ProfileController {
         return new ApiResponse<>(true,"user profile",profileService.getProfile(token));
     }
 
-    @PostMapping("create")
+    @PostMapping("/create")
     public ApiResponse<ProfileResponse> createProfile(@RequestHeader("Authorization") String token,
                                                       @RequestBody ProfileRequest request){
         return new ApiResponse<>(true,"user profile created",profileService.createProfile(token,request));
     }
 
-    @PostMapping
-    public ApiResponse<ProfileResponse> follow(@RequestHeader("Authorization") String token, @RequestBody User following){
+    @PostMapping("/follow/{id}")
+    public ApiResponse<ProfileResponse> follow(@RequestHeader("Authorization") String token, @PathVariable Long id){
         System.out.println("DEBUG inside follow");
-        return new ApiResponse<>(true,"user profile",profileService.follow(following,token));
+        return new ApiResponse<>(true,"user profile",profileService.follow(id,token));
     }
 }

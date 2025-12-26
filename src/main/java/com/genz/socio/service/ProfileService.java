@@ -23,21 +23,27 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public ProfileResponse follow(User following, String token) {
+    @Transactional
+    public ProfileResponse follow(Long  id, String token) {
         String userName = jwtService.extractUserName(token);
 
-        User  user = userRepository.findByUserName(userName).orElseThrow(()->
+        User  user1 = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
 
-        Profile profile = user.getProfile();
-        profile.getFollowing().add(following);
-        profileRepository.save(profile);
+        User user2 = userRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("profile not exits"));
 
-        Profile profile1 = following.getProfile();
-        profile1.getFollowers().add(user);
-        profileRepository.save(profile1);
+        Profile u1Profile = user1.getProfile();
+        Profile u2Profile = user2.getProfile();
 
-        return modelMapper.map(profile,ProfileResponse.class);
+        u1Profile.getFollowing().add(user2);
+        u2Profile.getFollowers().add(user1);
+
+
+        profileRepository.save(u1Profile);
+        profileRepository.save(u2Profile);
+
+
+        return modelMapper.map(user1.getProfile(),ProfileResponse.class);
     }
 
     public ProfileResponse getProfile(String token) {

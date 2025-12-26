@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public ProfileResponse follow(String token, User following) {
-        return modelMapper.map(profileService.follow(following, token),ProfileResponse.class);
+    public ProfileResponse follow(String token, Long id) {
+        return modelMapper.map(profileService.follow(id, token),ProfileResponse.class);
     }
 }
