@@ -1,5 +1,6 @@
 package com.genz.socio.service;
 
+import com.genz.socio.dto.request.UpdateEmailRequest;
 import com.genz.socio.dto.request.UpdatePasswordRequest;
 import com.genz.socio.dto.request.UpdateUserNameRequest;
 import com.genz.socio.dto.response.AuthResponse;
@@ -13,7 +14,7 @@ public interface UserService {
 
     UpdatePassword updatePassword(String token,  UpdatePasswordRequest update);
 
-    UserResponse updateEmail(String token,  String email);
+    UserResponse updateEmail(String token, UpdateEmailRequest update);
 
     ProfileResponse follow(String token, Long id);
 }

@@ -1,6 +1,7 @@
 package com.genz.socio.service;
 
 import com.genz.socio.dto.entity.User;
+import com.genz.socio.dto.request.UpdateEmailRequest;
 import com.genz.socio.dto.request.UpdatePasswordRequest;
 import com.genz.socio.dto.request.UpdateUserNameRequest;
 import com.genz.socio.dto.response.AuthResponse;
@@ -60,20 +61,15 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserResponse updateEmail(String token, String email) {
+    public UserResponse updateEmail(String token, UpdateEmailRequest newEmail) {
 
-        //TODO --- instead of taking String email create one request dto
-        String userName = jwtService.extractUserName(token);
+      String userName = jwtService.extractUserName(token);
 
-        User user = userRepository.findByUserName(userName).orElseThrow(()->
-                new ResourceNotFoundException("user not found"));
+      User user = userRepository.findByUserName(userName).orElseThrow(()-> new ResourceNotFoundException("user not found"));
 
-        if(user!=null){
-            user.setUserName(email);
-            userRepository.save(user);
-            return userMapper.toResponse(user);
-        }
-        throw  new UsernameNotFoundException("User Not Found");
+      user.setEmailOrPhone(newEmail.toString());
+      userRepository.save(user);
+      return modelMapper.map(user,UserResponse.class);
     }
 
     @Override
