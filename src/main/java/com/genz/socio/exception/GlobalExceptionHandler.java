@@ -13,6 +13,17 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler{
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(
+                        false,
+                        "An unexpected error occurred: " + ex.getMessage(),
+                        "INTERNAL_SERVER_ERROR",
+                        LocalDateTime.now()
+                ));
+    }
+
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedRequest(UnauthorizedException ex){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
