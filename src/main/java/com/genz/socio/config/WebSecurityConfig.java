@@ -1,5 +1,7 @@
 package com.genz.socio.config;
 
+import com.genz.socio.mapper.FollowerAndFollowingMapper;
+import com.genz.socio.mapper.ProfileMapper;
 import com.genz.socio.mapper.UserMapper;
 import com.genz.socio.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class WebSecurityConfig {
                 .csrf(c->c.disable())
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/api/auth/**","/api/health/check").permitAll()
+                        .requestMatchers("/api/user/profile/**").hasAnyRole("USER","ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER","ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -50,6 +53,16 @@ public class WebSecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public FollowerAndFollowingMapper followingMapper(){
+        return new FollowerAndFollowingMapper();
+    }
+
+    @Bean
+    public ProfileMapper profileMapper(){
+        return new ProfileMapper();
     }
 
 }

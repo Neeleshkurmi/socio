@@ -4,9 +4,12 @@ import com.genz.socio.dto.entity.Profile;
 import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.enums.Title;
 import com.genz.socio.dto.request.ProfileRequest;
+import com.genz.socio.dto.response.FollowerAndFollowingResponse;
 import com.genz.socio.dto.response.FollowerListResponse;
 import com.genz.socio.dto.response.ProfileResponse;
 import com.genz.socio.exception.ResourceNotFoundException;
+import com.genz.socio.mapper.FollowerAndFollowingMapper;
+import com.genz.socio.mapper.ProfileMapper;
 import com.genz.socio.repo.ProfileRepository;
 import com.genz.socio.repo.UserRepository;
 import com.genz.socio.security.JwtService;
@@ -15,7 +18,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -28,6 +30,8 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final FollowerAndFollowingMapper followingMapper;
+    private final ProfileMapper profileMapper;
 
     @Transactional
     public ProfileResponse follow(Long id, String token) {
@@ -53,11 +57,7 @@ public class ProfileService {
             profileRepository.save(u2Profile);
         }
 
-        ProfileResponse response = modelMapper.map(u1Profile, ProfileResponse.class);
-        response.setFollowersCount(u1Profile.getFollowers() != null ? (long) u1Profile.getFollowers().size() : 0L);
-        response.setFollowingCount(u1Profile.getFollowing() != null ? (long) u1Profile.getFollowing().size() : 0L);
-
-        return response;
+        return profileMapper.toResponse(u1Profile,user1.getUserName());
     }
 
     public ProfileResponse getProfile(String token) {
@@ -68,12 +68,7 @@ public class ProfileService {
 
         Profile profile = user.getProfile();
 
-        ProfileResponse response = modelMapper.map(profile, ProfileResponse.class);
-
-        response.setFollowersCount(profile.getFollowers() != null ? (long) profile.getFollowers().size() : 0L);
-        response.setFollowingCount(profile.getFollowing() != null ? (long) profile.getFollowing().size() : 0L);
-
-        return response;
+        return profileMapper.toResponse(profile,user.getUserName());
     }
 
     @Transactional
@@ -91,7 +86,7 @@ public class ProfileService {
         profile.setTitle(Title.PERSONAL);
         profile.setUser(user);
 
-        return modelMapper.map(profile,ProfileResponse.class);
+        return profileMapper.toResponse(profile,user.getUserName());
     }
 
     public FollowerListResponse getAllFollowers(String token) {
@@ -104,7 +99,11 @@ public class ProfileService {
 
         Set<User> followers= profile.getFollowers();
 
-        return modelMapper.map(followers,FollowerListResponse.class);
+        Set<FollowerAndFollowingResponse> followSet = new HashSet<>();
+        for (User follower : followers) {
+            followSet.add(followingMapper.toResponse(follower,follower.getProfile()));
+        }
+        return new FollowerListResponse(followSet);
     }
 
     public FollowerListResponse getAllFollowing(String token) {
@@ -115,9 +114,13 @@ public class ProfileService {
 
         Profile profile = user.getProfile();
 
-        Set<User> following = profile.getFollowing();
+        Set<User> following= profile.getFollowing();
 
-        return modelMapper.map(following,FollowerListResponse.class);
+        Set<FollowerAndFollowingResponse> followingSet = new HashSet<>();
+        for (User follower : following) {
+            followingSet.add(followingMapper.toResponse(follower,follower.getProfile()));
+        }
+        return new FollowerListResponse(followingSet);
     }
 
     public ProfileResponse profileChanges(String token, ProfileRequest request) {
@@ -135,6 +138,6 @@ public class ProfileService {
 
         profileRepository.save(profile);
 
-        return modelMapper.map(profile,ProfileResponse.class);
+        return profileMapper.toResponse(profile,user.getUserName());
     }
 }

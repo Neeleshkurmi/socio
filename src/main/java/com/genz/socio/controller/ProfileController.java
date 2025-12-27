@@ -10,13 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/user/profile")
 @RequiredArgsConstructor
 public class ProfileController {
 
     private final ProfileService profileService;
 
-    @GetMapping("/profile")
+    @GetMapping("/")
     public ApiResponse<ProfileResponse> getProfile(@RequestHeader("Authorization") String token){
         return new ApiResponse<>(true,"user profile",profileService.getProfile(token));
     }
@@ -44,6 +44,6 @@ public class ProfileController {
 
     @GetMapping("/get-followings")
     public ApiResponse<FollowerListResponse> getAllFollowings(@RequestHeader("Authorization") String token){
-        return new ApiResponse<>(true, "followers list", profileService.getAllFollowing(token));
+        return new ApiResponse<>(true, "following list", profileService.getAllFollowing(token));
     }
 }

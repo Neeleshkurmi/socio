@@ -4,11 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class FollowerListResponse {
-    Set<FollowerAndFollowingResponse> followersList;
+@AllArgsConstructor
+public class FollowerAndFollowingResponse {
+    Long id;
+    String useName;
+    String profilePhoto;
 }
