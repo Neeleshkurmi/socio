@@ -30,9 +30,7 @@ public class UserServiceImpl implements UserService{
     private final ProfileService profileService;
 
     @Override
-    public AuthResponse updateUserName(String token, UpdateUserNameRequest update) {
-        String userName = jwtService.extractUserName(token);
-
+    public AuthResponse updateUserName(String userName, UpdateUserNameRequest update) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("Resource not found"));
 
@@ -46,9 +44,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UpdatePassword updatePassword(String token, UpdatePasswordRequest update) {
-        String userName = jwtService.extractUserName(token);
-
+    public UpdatePassword updatePassword(String userName, UpdatePasswordRequest update) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
 
@@ -61,19 +57,17 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserResponse updateEmail(String token, UpdateEmailRequest newEmail) {
+    public UserResponse updateEmail(String userName, UpdateEmailRequest newEmail) {
+      User user = userRepository.findByUserName(userName).orElseThrow(()
+                                                    -> new ResourceNotFoundException("user not found"));
 
-      String userName = jwtService.extractUserName(token);
-
-      User user = userRepository.findByUserName(userName).orElseThrow(()-> new ResourceNotFoundException("user not found"));
-
-      user.setEmailOrPhone(newEmail.toString());
+      user.setEmailOrPhone(newEmail.getEmail());
       userRepository.save(user);
       return modelMapper.map(user,UserResponse.class);
     }
 
     @Override
     public ProfileResponse follow(String token, Long id) {
-        return modelMapper.map(profileService.follow(id, token),ProfileResponse.class);
+        return modelMapper.map(profileService.followAndUnfollow(id, token),ProfileResponse.class);
     }
 }

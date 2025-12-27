@@ -46,11 +46,6 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public UserMapper userMapper(){
-        return new UserMapper();
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }

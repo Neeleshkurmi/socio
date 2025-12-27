@@ -34,14 +34,12 @@ public class ProfileService {
     private final ProfileMapper profileMapper;
 
     @Transactional
-    public ProfileResponse follow(Long id, String token) {
-        String userName = jwtService.extractUserName(token);
-
+    public ProfileResponse followAndUnfollow(Long id, String userName) {
         User user1 = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         User user2 = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile to follow does not exist"));
+                .orElseThrow(() -> new ResourceNotFoundException("Profile to followAndUnfollow not exists"));
 
         Profile u1Profile = user1.getProfile();
         Profile u2Profile = user2.getProfile();
@@ -49,20 +47,21 @@ public class ProfileService {
         if (u1Profile.getFollowing() == null) u1Profile.setFollowing(new HashSet<>());
         if (u2Profile.getFollowers() == null) u2Profile.setFollowers(new HashSet<>());
 
-        if (!u1Profile.getFollowing().contains(user2)) {
+        if (u1Profile.getFollowing().contains(user2)) {
+            u1Profile.getFollowing().remove(user2);
+            u2Profile.getFollowers().remove(user1);
+        }
+        else{
             u1Profile.getFollowing().add(user2);
             u2Profile.getFollowers().add(user1);
-
-            profileRepository.save(u1Profile);
-            profileRepository.save(u2Profile);
         }
+        profileRepository.save(u1Profile);
+        profileRepository.save(u2Profile);
 
         return profileMapper.toResponse(u1Profile,user1.getUserName());
     }
 
-    public ProfileResponse getProfile(String token) {
-        String userName = jwtService.extractUserName(token);
-
+    public ProfileResponse getProfile(String userName) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
 
@@ -72,9 +71,7 @@ public class ProfileService {
     }
 
     @Transactional
-    public ProfileResponse createProfile(String token, ProfileRequest request) {
-        String userName = jwtService.extractUserName(token);
-
+    public ProfileResponse createProfile(String userName, ProfileRequest request) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
 
@@ -89,9 +86,7 @@ public class ProfileService {
         return profileMapper.toResponse(profile,user.getUserName());
     }
 
-    public FollowerListResponse getAllFollowers(String token) {
-        String userName = jwtService.extractUserName(token);
-
+    public FollowerListResponse getAllFollowers(String userName) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
 
@@ -106,9 +101,7 @@ public class ProfileService {
         return new FollowerListResponse(followSet);
     }
 
-    public FollowerListResponse getAllFollowing(String token) {
-        String userName = jwtService.extractUserName(token);
-
+    public FollowerListResponse getAllFollowing(String userName) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
 
@@ -123,9 +116,7 @@ public class ProfileService {
         return new FollowerListResponse(followingSet);
     }
 
-    public ProfileResponse profileChanges(String token, ProfileRequest request) {
-        String userName = jwtService.extractUserName(token);
-
+    public ProfileResponse profileChanges(String userName, ProfileRequest request) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
 

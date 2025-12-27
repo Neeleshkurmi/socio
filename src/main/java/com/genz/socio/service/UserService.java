@@ -10,11 +10,11 @@ import com.genz.socio.dto.response.UserResponse;
 
 public interface UserService {
 
-    AuthResponse updateUserName(String token, UpdateUserNameRequest update);
+    AuthResponse updateUserName(String userName ,UpdateUserNameRequest update);
 
-    UpdatePassword updatePassword(String token,  UpdatePasswordRequest update);
+    UpdatePassword updatePassword(String userName, UpdatePasswordRequest update);
 
-    UserResponse updateEmail(String token, UpdateEmailRequest update);
+    UserResponse updateEmail(String userName, UpdateEmailRequest update);
 
-    ProfileResponse follow(String token, Long id);
+    ProfileResponse follow(String userName, Long id);
 }

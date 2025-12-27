@@ -4,8 +4,7 @@ import com.genz.socio.dto.request.LoginRequest;
 import com.genz.socio.dto.request.RegisterRequest;
 import com.genz.socio.dto.response.ApiResponse;
 import com.genz.socio.dto.response.AuthResponse;
-import com.genz.socio.dto.response.UserResponse;
-import com.genz.socio.service.AuthServiceImpl;
+import com.genz.socio.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthServiceImpl authService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest){
