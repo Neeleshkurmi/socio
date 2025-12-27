@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Socio - Home</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .hero-section { padding: 60px 0; background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+        .btn-group-custom { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="#">Socio</a>
+        <div id="authButtons">
+        </div>
+    </div>
+</nav>
+
+<div class="hero-section text-center">
+    <div class="container">
+        <h1>Welcome to Socio</h1>
+        <p class="lead">Connect with friends, share posts, and discover new creators.</p>
+
+        <div class="btn-group-custom">
+            <button onclick="navigateToProfile()" class="btn btn-primary btn-lg">View My Profile</button>
+            <button onclick="location.href='/search'" class="btn btn-outline-primary btn-lg">Discover People</button>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h3>Quick Actions</h3>
+            <div class="list-group mt-3">
+                <button onclick="navigateToFollowers()" class="list-group-item list-group-item-action">
+                    Check My Followers
+                </button>
+                <button onclick="navigateToFollowing()" class="list-group-item list-group-item-action">
+                    See Who I'm Following
+                </button>
+                <button onclick="location.href='/api/health/check'" class="list-group-item list-group-item-action text-info">
+                    System Health Status
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize UI based on Token presence
+    window.onload = function() {
+        const token = localStorage.getItem('socio_token');
+        const authContainer = document.getElementById('authButtons');
+
+        if (token) {
+            authContainer.innerHTML = `
+                <span class="text-white me-3">Logged In</span>
+                <button onclick="logout()" class="btn btn-outline-danger btn-sm">Logout</button>
+            `;
+        } else {
+            authContainer.innerHTML = `
+                <a href="/login" class="btn btn-outline-light btn-sm me-2">Login</a>
+                <a href="/signup" class="btn btn-primary btn-sm">Sign Up</a>
+            `;
+        }
+    };
+
+    // Navigation helper to include JWT in headers
+    async function authorizedRedirect(targetUrl) {
+        const token = localStorage.getItem('socio_token');
+        if (!token) {
+            alert("You must be logged in to access this feature.");
+            window.location.href = '/login';
+            return;
+        }
+        // Redirect to the view page
+        window.location.href = targetUrl;
+    }
+
+    // Specific button handlers
+    function navigateToProfile() { authorizedRedirect('/profile-view'); }
+    function navigateToFollowers() { authorizedRedirect('/followers'); }
+    function navigateToFollowing() { authorizedRedirect('/following'); }
+
+    function logout() {
+        localStorage.removeItem('socio_token');
+        window.location.href = '/login';
+    }
+</script>
+
+</body>
+</html>

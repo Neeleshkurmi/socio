@@ -28,7 +28,8 @@ public class WebSecurityConfig {
         return httpSecurity
                 .csrf(c->c.disable())
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/api/auth/**","/api/health/check").permitAll()
+                        .requestMatchers("/api/auth/**","/api/health/check","/",
+                                "/login", "/signup", "/profile-view","/edit-profile").permitAll()
                         .requestMatchers("/api/user/profile/**").hasAnyRole("USER","ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER","ADMIN")
                         .anyRequest().authenticated()

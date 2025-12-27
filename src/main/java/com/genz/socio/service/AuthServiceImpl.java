@@ -60,9 +60,9 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        String token = jwtService.generateToken(user);
+        profileService.createProfile(user.getUserName(),new ProfileRequest());
 
-        profileService.createProfile(token,new ProfileRequest());
+        String token = jwtService.generateToken(user);
 
         return new AuthResponse(token, userMapper.toResponse(user));
     }
