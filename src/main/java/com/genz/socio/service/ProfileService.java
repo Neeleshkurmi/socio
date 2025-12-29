@@ -47,18 +47,19 @@ public class ProfileService {
         if (u1Profile.getFollowing() == null) u1Profile.setFollowing(new HashSet<>());
         if (u2Profile.getFollowers() == null) u2Profile.setFollowers(new HashSet<>());
 
-        if (u1Profile.getFollowing().contains(user2)) {
-            u1Profile.getFollowing().remove(user2);
-            u2Profile.getFollowers().remove(user1);
-        }
-        else{
-            u1Profile.getFollowing().add(user2);
-            u2Profile.getFollowers().add(user1);
-        }
-        profileRepository.save(u1Profile);
-        profileRepository.save(u2Profile);
 
-        return profileMapper.toResponse(u1Profile,user1.getUserName());
+        if (u1Profile.getFollowing().contains(u2Profile)) {
+            u2Profile.getFollowers().remove(u1Profile);
+            u1Profile.getFollowing().remove(u2Profile);
+        } else {
+            u2Profile.getFollowers().add(u1Profile);
+            u1Profile.getFollowing().add(u2Profile);
+        }
+
+        profileRepository.save(u2Profile);
+        profileRepository.save(u1Profile);
+
+        return profileMapper.toResponse(u1Profile,user1);
     }
 
     public ProfileResponse getProfile(String userName) {
@@ -67,7 +68,7 @@ public class ProfileService {
 
         Profile profile = user.getProfile();
 
-        return profileMapper.toResponse(profile,user.getUserName());
+        return profileMapper.toResponse(profile,user);
     }
 
     @Transactional
@@ -83,7 +84,7 @@ public class ProfileService {
         profile.setTitle(Title.PERSONAL);
         profile.setUser(user);
 
-        return profileMapper.toResponse(profile,user.getUserName());
+        return profileMapper.toResponse(profile,user);
     }
 
     public FollowerListResponse getAllFollowers(String userName) {
@@ -92,11 +93,11 @@ public class ProfileService {
 
         Profile profile = user.getProfile();
 
-        Set<User> followers= profile.getFollowers();
+        Set<Profile> followers= profile.getFollowers();
 
         Set<FollowerAndFollowingResponse> followSet = new HashSet<>();
-        for (User follower : followers) {
-            followSet.add(followingMapper.toResponse(follower,follower.getProfile()));
+        for (Profile follower : followers) {
+            followSet.add(followingMapper.toResponse(follower.getUser(),follower));
         }
         return new FollowerListResponse(followSet);
     }
@@ -107,11 +108,11 @@ public class ProfileService {
 
         Profile profile = user.getProfile();
 
-        Set<User> following= profile.getFollowing();
+        Set<Profile> following= profile.getFollowing();
 
         Set<FollowerAndFollowingResponse> followingSet = new HashSet<>();
-        for (User follower : following) {
-            followingSet.add(followingMapper.toResponse(follower,follower.getProfile()));
+        for (Profile follower : following) {
+            followingSet.add(followingMapper.toResponse(follower.getUser(),follower));
         }
         return new FollowerListResponse(followingSet);
     }
@@ -129,6 +130,6 @@ public class ProfileService {
 
         profileRepository.save(profile);
 
-        return profileMapper.toResponse(profile,user.getUserName());
+        return profileMapper.toResponse(profile,user);
     }
 }

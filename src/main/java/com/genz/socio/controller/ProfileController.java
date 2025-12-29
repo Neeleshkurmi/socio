@@ -37,7 +37,7 @@ public class ProfileController {
     }
 
     @PostMapping("/followAndUnfollow/{id}")
-    public ApiResponse<ProfileResponse> follow(@RequestHeader("Authorization") String token, @PathVariable Long id){
+    public ApiResponse<ProfileResponse> followAndUnfollow(@RequestHeader("Authorization") String token, @PathVariable Long id){
         String userName = jwtService.extractUserName(token);
         return new ApiResponse<>(true,"user profile",profileService.followAndUnfollow(id,userName));
     }

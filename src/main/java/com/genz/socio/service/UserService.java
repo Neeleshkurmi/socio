@@ -16,5 +16,4 @@ public interface UserService {
 
     UserResponse updateEmail(String userName, UpdateEmailRequest update);
 
-    ProfileResponse follow(String userName, Long id);
 }

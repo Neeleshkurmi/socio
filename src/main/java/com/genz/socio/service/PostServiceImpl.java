@@ -1,0 +1,67 @@
+package com.genz.socio.service;
+
+import com.genz.socio.dto.entity.Post;
+import com.genz.socio.dto.entity.User;
+import com.genz.socio.dto.request.DeletePostRequest;
+import com.genz.socio.dto.request.PostRequest;
+import com.genz.socio.dto.response.EditPostRequest;
+import com.genz.socio.dto.response.PostResponse;
+import com.genz.socio.exception.ResourceNotFoundException;
+import com.genz.socio.mapper.PostMapper;
+import com.genz.socio.repo.PostRepository;
+import com.genz.socio.repo.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+
+@Service
+@RequiredArgsConstructor
+public class PostServiceImpl implements PostService{
+
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final ModelMapper modelMapper;
+    private final PostMapper postMapper;
+
+
+    @Transactional
+    @Override
+    public PostResponse createPost(PostRequest request, User user) {
+        Post post = new Post(request.getUrl(), request.getTitle(),0L
+                            , user, new ArrayList<>(), new HashSet<>());
+
+        postRepository.save(post);
+
+        return postMapper.toResponse(post);
+    }
+
+    @Override
+    public String deletePost(Long id, User user) {
+        Post post = postRepository.findById(id).orElseThrow(()->
+                                    new ResourceNotFoundException("post not found"));
+
+        User user1 = userRepository.findByUserName(user.getUserName()).orElseThrow();
+
+        user1.getPosts().remove(post);
+
+        postRepository.delete(post);
+        userRepository.save(user1);
+
+        return "post deleted successfully";
+    }
+
+    @Override
+    public PostResponse editPost(EditPostRequest request) {
+        Post post = postRepository.findById(request.id()).orElseThrow(()->
+                            new ResourceNotFoundException("post not found"));
+
+        post.setTitle(request.title());
+        Post response = postRepository.save(post);
+
+        return postMapper.toResponse(response);
+    }
+}

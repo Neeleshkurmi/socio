@@ -1,6 +1,5 @@
 package com.genz.socio.controller;
 
-import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.request.UpdateEmailRequest;
 import com.genz.socio.dto.request.UpdatePasswordRequest;
 import com.genz.socio.dto.request.UpdateUserNameRequest;
@@ -11,19 +10,14 @@ import com.genz.socio.dto.response.UserResponse;
 import com.genz.socio.repo.UserRepository;
 import com.genz.socio.security.JwtService;
 import com.genz.socio.service.UserService;
-import com.genz.socio.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
 
-    private Logger logger = Logger.getLogger("logger");
     private final UserService userService;
     private final JwtService jwtService;
     private final UserRepository userRepository;

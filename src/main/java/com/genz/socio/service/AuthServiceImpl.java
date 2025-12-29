@@ -4,8 +4,8 @@ package com.genz.socio.service;
 import com.genz.socio.dto.entity.Profile;
 import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.enums.Role;
+import com.genz.socio.dto.enums.Title;
 import com.genz.socio.dto.request.LoginRequest;
-import com.genz.socio.dto.request.ProfileRequest;
 import com.genz.socio.dto.request.RegisterRequest;
 import com.genz.socio.dto.response.AuthResponse;
 import com.genz.socio.exception.BadRequestException;
@@ -56,11 +56,12 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(Role.USER);
         user.setEmailOrPhone(request.getEmailOrPhone());
         user.setFullName(request.getFullName());
-        user.setProfile(new Profile());
 
+        Profile profile = new Profile();
+        profile.setUser(user);
+        profile.setTitle(Title.PERSONAL);
+        user.setProfile(profile);
         userRepository.save(user);
-
-        profileService.createProfile(user.getUserName(),new ProfileRequest());
 
         String token = jwtService.generateToken(user);
 

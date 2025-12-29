@@ -65,9 +65,4 @@ public class UserServiceImpl implements UserService{
       userRepository.save(user);
       return modelMapper.map(user,UserResponse.class);
     }
-
-    @Override
-    public ProfileResponse follow(String token, Long id) {
-        return modelMapper.map(profileService.followAndUnfollow(id, token),ProfileResponse.class);
-    }
 }

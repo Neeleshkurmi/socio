@@ -1,8 +1,8 @@
 package com.genz.socio.config;
 
 import com.genz.socio.mapper.FollowerAndFollowingMapper;
+import com.genz.socio.mapper.PostMapper;
 import com.genz.socio.mapper.ProfileMapper;
-import com.genz.socio.mapper.UserMapper;
 import com.genz.socio.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -59,6 +59,11 @@ public class WebSecurityConfig {
     @Bean
     public ProfileMapper profileMapper(){
         return new ProfileMapper();
+    }
+
+    @Bean
+    public PostMapper postMapper(){
+        return new PostMapper();
     }
 
 }

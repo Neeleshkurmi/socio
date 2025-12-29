@@ -13,8 +13,8 @@ public class ProfileResponse {
     private String profilePhoto;
     private String bio;
     private String title;
-    private String location;
     private Long noOfPosts;
+    private String location;
     private Long followersCount;
     private Long followingCount;
 }
