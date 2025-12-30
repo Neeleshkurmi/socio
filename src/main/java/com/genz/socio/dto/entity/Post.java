@@ -1,5 +1,8 @@
 package com.genz.socio.dto.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -30,9 +33,11 @@ public class Post extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"posts", "profile", "password", "hibernateLazyInitializer", "handler"})
     private User author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("post")
     private List<Comment> comments = new ArrayList<>();
 
     @ManyToMany
@@ -41,6 +46,7 @@ public class Post extends BaseEntity {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "profile_id")
     )
+    @JsonIgnore
     private Set<Profile> likedBy = new HashSet<>();
 
     public void addComment(Comment comment) {

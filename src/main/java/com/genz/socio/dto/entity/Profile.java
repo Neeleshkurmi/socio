@@ -1,5 +1,7 @@
 package com.genz.socio.dto.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.genz.socio.dto.enums.Title;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,12 +29,15 @@ public class Profile extends BaseEntity {
             joinColumns = @JoinColumn(name = "profile_id"),
             inverseJoinColumns = @JoinColumn(name = "follower_id")
     )
+    @JsonIgnore
     private Set<Profile> followers = new HashSet<>();
 
     @ManyToMany(mappedBy = "followers")
+    @JsonIgnore
     private Set<Profile> following = new HashSet<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JsonIgnoreProperties({"posts", "profile", "password", "hibernateLazyInitializer", "handler"})
     private User user;
 }

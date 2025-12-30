@@ -17,12 +17,10 @@ public class PostMapper {
         response.setAuthor(mapper.toResponse(post.getAuthor().getProfile(),post.getAuthor()));
         response.setCreatedAt(post.getCreatedAt());
         response.setTitle(post.getTitle());
-        response.setNoOfPosts((long) post.getAuthor().getPosts().size());
-        response.setNoLikes((long)post.getLikedBy().size());
-        response.setNoComments((long)post.getComments().size());
+        response.setLikes(post.getLikedBy());
+        response.setComments(post.getComments());
         response.setNoShares(post.getShares());
         response.setUrl(post.getPostUrl());
-
         return response;
     }
 }

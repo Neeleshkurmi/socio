@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProfileResponse {
 
+    private Long id;
     private String userName;
     private String profilePhoto;
     private String bio;
