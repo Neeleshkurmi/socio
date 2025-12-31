@@ -17,6 +17,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/post")
 @RequiredArgsConstructor
@@ -86,12 +88,34 @@ public class PostController {
 
     @GetMapping("/get-post/{postId}")
     public ApiResponse<PostResponse> getPost(@RequestHeader("Authorization") String token,
-                                             @PathVariable Long postId){
+                                                              @PathVariable Long postId){
+//        String userName = jwtService.extractUserName(token);
+//
+//        User user = userRepository.findByUserName(userName).orElseThrow(()->
+//                new UsernameNotFoundException("user not found, login again and then try"));
+
+       return  new ApiResponse<>(true, "here is your post", postService.getPost(postId));
+    }
+
+    @GetMapping("/get-all/posts")
+    public ApiResponse<List<PostResponse>> getAllPosts(@RequestHeader("Authorization") String token){
         String userName = jwtService.extractUserName(token);
 
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new UsernameNotFoundException("user not found, login again and then try"));
 
-       return  new ApiResponse<>(true, "here is your post", postService.getPost(postId));
+        return  new ApiResponse<>(true, "here is your post", postService.getAllPosts(user));
+    }
+
+    @PutMapping("/share-post/{postId}")
+    public ApiResponse<PostResponse> sharePost(@RequestHeader("Authorization") String token,
+                                               @PathVariable Long postId){
+
+        String userName = jwtService.extractUserName(token);
+
+        User user = userRepository.findByUserName(userName).orElseThrow(()->
+                new UsernameNotFoundException("user not found, login again and then try"));
+
+        return new ApiResponse<>(true, "post shared successfully", postService.sharePost(user, postId));
     }
 }

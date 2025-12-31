@@ -9,6 +9,8 @@ import com.genz.socio.dto.response.EditPostRequest;
 import com.genz.socio.dto.response.PostResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public interface PostService {
 
@@ -23,4 +25,8 @@ public interface PostService {
     PostResponse commentOnPost(User likedBy, Post post, CommentRequest comment);
 
     PostResponse getPost(Long postId);
+
+    List<PostResponse> getAllPosts(User user);
+
+    PostResponse sharePost(User user, Long postId);
 }

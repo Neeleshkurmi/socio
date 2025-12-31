@@ -2,10 +2,8 @@ package com.genz.socio.service;
 
 import com.genz.socio.dto.entity.Comment;
 import com.genz.socio.dto.entity.Post;
-import com.genz.socio.dto.entity.Profile;
 import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.request.CommentRequest;
-import com.genz.socio.dto.request.DeletePostRequest;
 import com.genz.socio.dto.request.PostRequest;
 import com.genz.socio.dto.response.EditPostRequest;
 import com.genz.socio.dto.response.PostResponse;
@@ -21,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -97,6 +96,31 @@ public class PostServiceImpl implements PostService{
     public PostResponse getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(()->
                 new ResourceNotFoundException("post not found"));
+
+        return postMapper.toResponse(post);
+    }
+
+    @Override
+    public List<PostResponse> getAllPosts(User user) {
+        List<Post> posts= user.getPosts();
+
+        List<PostResponse> postResponses = new ArrayList<>();
+
+        for(Post post: posts){
+            postResponses.add(postMapper.toResponse(post));
+        }
+
+        return postResponses;
+    }
+
+    @Override
+    public PostResponse sharePost(User user, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(()->
+                new ResourceNotFoundException("post not found"));
+
+        post.setShares(post.getShares()+1);
+
+        postRepository.save(post);
 
         return postMapper.toResponse(post);
     }
