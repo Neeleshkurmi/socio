@@ -84,7 +84,7 @@ public class PostController {
 
         return new ApiResponse<>(true, "you have liked the post", postService.commentOnPost(likedBy,
                 post, comment));
-    }git 
+    }
 
     @GetMapping("/get-post/{postId}")
     public ApiResponse<PostResponse> getPost(@RequestHeader("Authorization") String token,
