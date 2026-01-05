@@ -2,6 +2,7 @@ package com.genz.socio.service;
 
 import com.genz.socio.dto.entity.Comment;
 import com.genz.socio.dto.entity.Post;
+import com.genz.socio.dto.entity.Profile;
 import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.request.CommentRequest;
 import com.genz.socio.dto.request.PostRequest;
@@ -17,6 +18,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -123,5 +125,17 @@ public class PostServiceImpl implements PostService{
         postRepository.save(post);
 
         return postMapper.toResponse(post);
+    }
+
+    public PostResponse getLatestPosts(User user, LocalDateTime dateTime){
+
+        List<Post> posts = user.getPosts();
+
+        for(Post post: posts){
+            if(post.getCreatedAt().isBefore(dateTime) && post.getCreatedAt().isAfter(dateTime.minusDays(4))){
+                return postMapper.toResponse(post);
+            }
+        }
+        return postMapper.toResponse(posts.getLast());
     }
 }
