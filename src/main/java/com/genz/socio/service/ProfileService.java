@@ -6,7 +6,6 @@ import com.genz.socio.dto.enums.Title;
 import com.genz.socio.dto.request.ProfileRequest;
 import com.genz.socio.dto.response.FollowerAndFollowingResponse;
 import com.genz.socio.dto.response.FollowerListResponse;
-import com.genz.socio.dto.response.PostResponse;
 import com.genz.socio.dto.response.ProfileResponse;
 import com.genz.socio.exception.ResourceNotFoundException;
 import com.genz.socio.mapper.FollowerAndFollowingMapper;
@@ -16,10 +15,11 @@ import com.genz.socio.repo.UserRepository;
 import com.genz.socio.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -36,6 +36,7 @@ public class ProfileService {
     private final ProfileMapper profileMapper;
 
     @Transactional
+    @CachePut(cacheNames = "userprofile", key = "#userName")
     public ProfileResponse followAndUnfollow(Long id, String userName) {
         User user1 = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -64,6 +65,7 @@ public class ProfileService {
         return profileMapper.toResponse(u1Profile,user1);
     }
 
+    @Cacheable(cacheNames = "userprofile", key = "#userName")
     public ProfileResponse getProfile(String userName) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
@@ -74,6 +76,7 @@ public class ProfileService {
     }
 
     @Transactional
+    @CachePut(cacheNames = "userprofile", key = "#userName")
     public ProfileResponse createProfile(String userName, ProfileRequest request) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
@@ -89,6 +92,7 @@ public class ProfileService {
         return profileMapper.toResponse(profile,user);
     }
 
+    @Cacheable(cacheNames = "followers", key = "#userName")
     public FollowerListResponse getAllFollowers(String userName) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
@@ -104,6 +108,7 @@ public class ProfileService {
         return new FollowerListResponse(followSet);
     }
 
+    @Cacheable(cacheNames = "following", key = "#userName")
     public FollowerListResponse getAllFollowing(String userName) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
@@ -119,6 +124,7 @@ public class ProfileService {
         return new FollowerListResponse(followingSet);
     }
 
+    @CachePut(cacheNames = "userprofile", key = "#userName")
     public ProfileResponse profileChanges(String userName, ProfileRequest request) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));

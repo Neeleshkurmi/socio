@@ -3,7 +3,7 @@ package com.genz.socio.service;
 import com.genz.socio.dto.entity.Profile;
 import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.response.PostResponse;
-import com.genz.socio.dto.response.UserResponse;
+import com.genz.socio.dto.response.ProfileResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public interface ContentService {
 
     List<PostResponse> explore(User user);
 
-    List<UserResponse> search(User user);
+    ProfileResponse search(String username);
 
     List<PostResponse> shortVideos(User user);
 

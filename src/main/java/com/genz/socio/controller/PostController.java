@@ -89,12 +89,12 @@ public class PostController {
     @GetMapping("/get-post/{postId}")
     public ApiResponse<PostResponse> getPost(@RequestHeader("Authorization") String token,
                                                               @PathVariable Long postId){
-//        String userName = jwtService.extractUserName(token);
-//
-//        User user = userRepository.findByUserName(userName).orElseThrow(()->
-//                new UsernameNotFoundException("user not found, login again and then try"));
+        String userName = jwtService.extractUserName(token);
 
-       return  new ApiResponse<>(true, "here is your post", postService.getPost(postId));
+        User user = userRepository.findByUserName(userName).orElseThrow(()->
+                new UsernameNotFoundException("user not found, login again and then try"));
+
+       return  new ApiResponse<>(true, "here is your post", postService.getPost(postId,user));
     }
 
     @GetMapping("/get-all/posts")

@@ -5,7 +5,6 @@ import com.genz.socio.dto.request.UpdateEmailRequest;
 import com.genz.socio.dto.request.UpdatePasswordRequest;
 import com.genz.socio.dto.request.UpdateUserNameRequest;
 import com.genz.socio.dto.response.AuthResponse;
-import com.genz.socio.dto.response.ProfileResponse;
 import com.genz.socio.dto.response.UpdatePassword;
 import com.genz.socio.dto.response.UserResponse;
 import com.genz.socio.exception.ResourceNotFoundException;
@@ -14,6 +13,7 @@ import com.genz.socio.repo.UserRepository;
 import com.genz.socio.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,12 @@ public class UserServiceImpl implements UserService{
     private final PasswordEncoder passwordEncoder;
     private final ProfileService profileService;
 
+
+    private final static String cacheKey = "#userName";
+    private final static String cacheName = "userdata";
+
     @Override
+    @CachePut(cacheNames = cacheName, key = cacheKey)
     public AuthResponse updateUserName(String userName, UpdateUserNameRequest update) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("Resource not found"));
@@ -44,6 +49,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @CachePut(cacheNames = cacheName, key = cacheKey)
     public UpdatePassword updatePassword(String userName, UpdatePasswordRequest update) {
         User user = userRepository.findByUserName(userName).orElseThrow(()->
                 new ResourceNotFoundException("user not found"));
@@ -57,6 +63,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    @CachePut(cacheNames = cacheName, key = cacheKey)
     public UserResponse updateEmail(String userName, UpdateEmailRequest newEmail) {
       User user = userRepository.findByUserName(userName).orElseThrow(()
                                                     -> new ResourceNotFoundException("user not found"));

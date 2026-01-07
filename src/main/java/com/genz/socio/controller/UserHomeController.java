@@ -3,20 +3,18 @@ package com.genz.socio.controller;
 import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.response.ApiResponse;
 import com.genz.socio.dto.response.PostResponse;
+import com.genz.socio.dto.response.ProfileResponse;
 import com.genz.socio.exception.ResourceNotFoundException;
 import com.genz.socio.repo.UserRepository;
 import com.genz.socio.security.JwtService;
 import com.genz.socio.service.ContentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/home")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserHomeController {
 
@@ -32,5 +30,11 @@ public class UserHomeController {
                     new ResourceNotFoundException("user not found"));
 
         return new ApiResponse<>(true, "random home content", contentService.homeContent(user));
+    }
+
+    @PostMapping("/search")
+    public ApiResponse<ProfileResponse> search(@RequestHeader("Authorization") String token){
+        //TODO
+        return null;
     }
 }

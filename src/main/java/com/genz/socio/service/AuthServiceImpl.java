@@ -14,6 +14,7 @@ import com.genz.socio.mapper.UserMapper;
 import com.genz.socio.repo.UserRepository;
 import com.genz.socio.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
+    @Cacheable(cacheNames = "userdata", key = "#request.emailOrUserName")
     public AuthResponse login(LoginRequest request){
         User user = userRepository.findUserByEmailOrUserName(request.getEmailOrUserName())
                 .orElseThrow(()-> new ResourceNotFoundException("Invalid Credentials"));
@@ -40,11 +42,13 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String token = jwtService.generateToken(user);
+
         return new AuthResponse(token,userMapper.toResponse(user));
     }
 
     @Transactional
     @Override
+    @Cacheable(cacheNames = "userdata", key = "#request.emailOrUserName")
     public AuthResponse register(RegisterRequest request){
         if (userRepository.findUserByEmailOrUserName(request.getEmailOrPhone()).isPresent()) {
             throw new BadRequestException("User already exists");

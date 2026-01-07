@@ -15,6 +15,9 @@ import com.genz.socio.repo.ProfileRepository;
 import com.genz.socio.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,9 +37,13 @@ public class PostServiceImpl implements PostService{
     private final ProfileRepository profileRepository;
 
 
+    private final String cacheKey = "#user.userName";
+    private final String cacheName = "postdata";
+
 
     @Transactional
     @Override
+    @Cacheable(cacheNames = cacheName, key = cacheKey)
     public PostResponse createPost(PostRequest request, User user) {
         Post post = new Post(request.getUrl(), request.getTitle(),0L
                             , user, new ArrayList<>(), new HashSet<>());
@@ -47,6 +54,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @CacheEvict(cacheNames = cacheName, key = cacheKey)
     public String deletePost(Long id, User user) {
         Post post = postRepository.findById(id).orElseThrow(()->
                                     new ResourceNotFoundException("post not found"));
@@ -62,6 +70,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @CachePut(cacheNames = cacheName, key = cacheKey)
     public PostResponse editPost(EditPostRequest request, User user) {
         Post post = postRepository.findById(request.id()).orElseThrow(()->
                             new ResourceNotFoundException("post not found"));
@@ -73,6 +82,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @CachePut(cacheNames = cacheName, key = cacheKey)
     public PostResponse likeOrDislikePost(User likedBy, Post post) {
 
         if(post.getLikedBy().contains(likedBy.getProfile())){
@@ -87,6 +97,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @CachePut(cacheNames = cacheName, key = cacheKey)
     public PostResponse commentOnPost(User commentBy, Post post, CommentRequest comment) {
         post.addComment(new Comment(comment.getText(),post,commentBy));
         postRepository.save(post);
@@ -95,7 +106,8 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public PostResponse getPost(Long postId) {
+    @Cacheable(cacheNames = cacheName, key = cacheKey)
+    public PostResponse getPost(Long postId, User user) {
         Post post = postRepository.findById(postId).orElseThrow(()->
                 new ResourceNotFoundException("post not found"));
 
@@ -103,6 +115,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Cacheable(cacheNames = "allposts", key = cacheKey)
     public List<PostResponse> getAllPosts(User user) {
         List<Post> posts= user.getPosts();
 
@@ -116,6 +129,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @CachePut(cacheNames = cacheName, key = cacheKey)
     public PostResponse sharePost(User user, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(()->
                 new ResourceNotFoundException("post not found"));
@@ -127,6 +141,7 @@ public class PostServiceImpl implements PostService{
         return postMapper.toResponse(post);
     }
 
+    @Cacheable(cacheNames = cacheName, key = cacheKey)
     public PostResponse getLatestPosts(User user, LocalDateTime dateTime){
 
         List<Post> posts = user.getPosts();
@@ -136,6 +151,6 @@ public class PostServiceImpl implements PostService{
                 return postMapper.toResponse(post);
             }
         }
-        return postMapper.toResponse(posts.getLast());
+        return postMapper.toResponse(posts.get(posts.isEmpty() ? posts.size()-1:null));
     }
 }

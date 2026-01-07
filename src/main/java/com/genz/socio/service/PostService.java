@@ -24,7 +24,7 @@ public interface PostService {
 
     PostResponse commentOnPost(User likedBy, Post post, CommentRequest comment);
 
-    PostResponse getPost(Long postId);
+    PostResponse getPost(Long postId,  User user);
 
     List<PostResponse> getAllPosts(User user);
 
