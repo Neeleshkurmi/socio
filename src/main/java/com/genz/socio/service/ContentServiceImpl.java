@@ -12,7 +12,11 @@ import com.genz.socio.repo.PostRepository;
 import com.genz.socio.repo.ProfileRepository;
 import com.genz.socio.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -34,48 +38,52 @@ public class ContentServiceImpl implements ContentService{
     private final UserMapper userMapper;
     private final ProfileMapper profileMapper;
 
-    private final String cacheName = "content";
     private final String cacheKey = "#user.userName";
 
     @Override
-    @Cacheable(cacheNames = cacheName, key = cacheKey)
+    @Cacheable(cacheNames = "home", key = "#user.userName")
     public List<PostResponse> homeContent(User user) {
-
         Set<Profile> followings = user.getProfile().getFollowing();
 
-        List<PostResponse> posts = new ArrayList<>();
+        Pageable pageable = PageRequest.of(0, 20);
 
-        for(Profile following : followings){
-            if(posts.size()<=9){
-                posts.add(getLatestPosts(following));
-            }
-        }
-        return posts;
+        return postRepository.findFeedByFollowing(followings, pageable)
+                .stream()
+                .map(postMapper::toResponse)
+                .toList();
     }
 
     @Override
-    @Cacheable(cacheNames = cacheName, key = cacheKey)
+    @Cacheable(cacheNames ="explore", key = "user.userName")
     public List<PostResponse> explore(User user) {
         return List.of();
     }
 
     @Override
-    @Cacheable(cacheNames = cacheName, key = cacheKey)
-    public ProfileResponse search(String username) {
-        User user = userRepository.findByUserName(username).orElseThrow(()->
-                new UsernameNotFoundException("user not found"));
+    @Cacheable(cacheNames = "search", key = "username")
+    public List<UserResponse> search(String username) {
 
-        return profileMapper.toResponse(user.getProfile(), user);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<User> usersPage = userRepository.findByUserNameContaining(username, pageable);
+
+        List<User> users = usersPage.getContent();
+
+        List<UserResponse> result = new ArrayList<>();
+
+        for(User user: users){
+            result.add(userMapper.toResponse(user));
+        }
+        return result;
     }
 
     @Override
-    @Cacheable(cacheNames = cacheName, key = cacheKey)
+    @Cacheable(cacheNames = "shorts", key = cacheKey)
     public List<PostResponse> shortVideos(User user) {
         return List.of();
     }
 
     @Override
-    @Cacheable(cacheNames = cacheName, key = cacheKey)
+    @CachePut(cacheNames = "home", key = cacheKey)
     public PostResponse getLatestPosts(Profile profile) {
         return postService.getLatestPosts(profile.getUser(), LocalDateTime.now());
     }

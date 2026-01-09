@@ -83,13 +83,13 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @CachePut(cacheNames = cacheName, key = cacheKey)
-    public PostResponse likeOrDislikePost(User likedBy, Post post) {
+    public PostResponse likeOrDislikePost(User user, Post post) {
 
-        if(post.getLikedBy().contains(likedBy.getProfile())){
-            post.getLikedBy().remove(likedBy.getProfile());
+        if(post.getLikedBy().contains(user.getProfile())){
+            post.getLikedBy().remove(user.getProfile());
         }
         else{
-            post.getLikedBy().add(likedBy.getProfile());
+            post.getLikedBy().add(user.getProfile());
         }
 
         postRepository.save(post);
@@ -98,8 +98,8 @@ public class PostServiceImpl implements PostService{
 
     @Override
     @CachePut(cacheNames = cacheName, key = cacheKey)
-    public PostResponse commentOnPost(User commentBy, Post post, CommentRequest comment) {
-        post.addComment(new Comment(comment.getText(),post,commentBy));
+    public PostResponse commentOnPost(User user, Post post, CommentRequest comment) {
+        post.addComment(new Comment(comment.getText(),post,user));
         postRepository.save(post);
 
         return postMapper.toResponse(post);
@@ -143,15 +143,18 @@ public class PostServiceImpl implements PostService{
     }
 
     @Cacheable(cacheNames = cacheName, key = cacheKey)
-    public PostResponse getLatestPosts(User user, LocalDateTime dateTime){
-
+    public PostResponse getLatestPosts(User user, LocalDateTime dateTime) {
         List<Post> posts = user.getPosts();
-
-        for(Post post: posts){
-            if(post.getCreatedAt().isBefore(dateTime) && post.getCreatedAt().isAfter(dateTime.minusDays(4))){
-                return postMapper.toResponse(post);
-            }
+        if (posts == null || posts.isEmpty()) {
+            throw new ResourceNotFoundException("No posts found");
         }
-        return postMapper.toResponse(posts.get(posts.isEmpty() ? posts.size()-1:null));
+
+        return posts.stream()
+                .filter(post -> post.getCreatedAt().isBefore(dateTime) &&
+                        post.getCreatedAt().isAfter(dateTime.minusDays(4)))
+                .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()))
+                .findFirst()
+                .map(postMapper::toResponse)
+                .orElseGet(() -> postMapper.toResponse(posts.get(posts.size() - 1)));
     }
 }
