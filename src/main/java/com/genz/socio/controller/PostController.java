@@ -8,12 +8,16 @@ import com.genz.socio.dto.response.ApiResponse;
 import com.genz.socio.dto.response.EditPostRequest;
 import com.genz.socio.dto.response.PostResponse;
 import com.genz.socio.exception.ResourceNotFoundException;
+import com.genz.socio.mapper.UserMapper;
 import com.genz.socio.repo.PostRepository;
 import com.genz.socio.repo.UserRepository;
 import com.genz.socio.security.JwtService;
 import com.genz.socio.service.PostService;
+import com.genz.socio.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,45 +32,37 @@ public class PostController {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final UserMapper modelMapper;
 
     @PostMapping("/create-post")
-    public ApiResponse<PostResponse> createPost(@RequestHeader("Authorization") String token
+    public ApiResponse<PostResponse> createPost(@AuthenticationPrincipal UserPrincipal userDetails
                                                 , @RequestBody PostRequest request){
-        String userName = jwtService.extractUserName(token);
-
-        User user = userRepository.findByUserName(userName).orElseThrow(()->
-                                    new UsernameNotFoundException("user not found, login again and then try"));
+        User user = modelMapper.map(userDetails);
 
         return new ApiResponse<>(true, "post uploaded successfully",postService.createPost(request, user));
     }
 
     @DeleteMapping("/delete-post/{id}")
-    public ApiResponse<String> deletePost(@RequestHeader("Authorization") String token
+    public ApiResponse<String> deletePost(@AuthenticationPrincipal UserPrincipal userDetails
             , @PathVariable Long id){
-        String userName = jwtService.extractUserName(token);
-
-        User user = userRepository.findByUserName(userName).orElseThrow(()->
-                new UsernameNotFoundException("user not found, login again and then try"));
+        User user = modelMapper.map(userDetails);
 
         return new ApiResponse<>(true, "post deleted successfully",postService.deletePost(id,user));
     }
 
     @PutMapping("/edit-post")
-    public ApiResponse<PostResponse> editPost(@RequestHeader("Authorization") String token
+    public ApiResponse<PostResponse> editPost(@AuthenticationPrincipal UserPrincipal userDetails
             , @RequestBody EditPostRequest request){
-        String userName = jwtService.extractUserName(token);
-
-        User user = userRepository.findByUserName(userName).orElseThrow(()->
-                new UsernameNotFoundException("user not found, login again and then try"));
+        User user = modelMapper.map(userDetails);
 
         return new ApiResponse<>(true, "post edit successfully", postService.editPost(request, user));
     }
 
     @PutMapping("/like-post/{postId}/{userId}")
-    public ApiResponse<PostResponse> likePost(@RequestHeader("Authorization") String token,
+    public ApiResponse<PostResponse> likePost(@AuthenticationPrincipal UserPrincipal userDetails,
                                               @PathVariable Long postId, @PathVariable Long userId){
 
-        User likedBy  = userRepository.findById(userId).orElseThrow(()-> new BadCredentialsException("user not find"));
+        User likedBy = modelMapper.map(userDetails);
 
         Post post = postRepository.findById(postId).orElseThrow(()-> new ResourceNotFoundException("post not found"));
 
@@ -74,47 +70,36 @@ public class PostController {
     }
 
     @PutMapping("/comment-post/{postId}/{userId}")
-    public ApiResponse<PostResponse> commentOnPost(@RequestHeader("Authorization") String token,
+    public ApiResponse<PostResponse> commentOnPost(@AuthenticationPrincipal UserPrincipal userDetails,
                                                    @PathVariable Long postId, @PathVariable Long userId,
                                                    @RequestBody CommentRequest comment){
 
-        User likedBy  = userRepository.findById(userId).orElseThrow(()-> new BadCredentialsException("user not find"));
+        User commentBy = modelMapper.map(userDetails);
 
         Post post = postRepository.findById(postId).orElseThrow(()-> new ResourceNotFoundException("post not found"));
 
-        return new ApiResponse<>(true, "you have liked the post", postService.commentOnPost(likedBy,
+        return new ApiResponse<>(true, "you have liked the post", postService.commentOnPost(commentBy,
                 post, comment));
     }
 
     @GetMapping("/get-post/{postId}")
-    public ApiResponse<PostResponse> getPost(@RequestHeader("Authorization") String token,
+    public ApiResponse<PostResponse> getPost(@AuthenticationPrincipal UserPrincipal userDetails,
                                                               @PathVariable Long postId){
-        String userName = jwtService.extractUserName(token);
-
-        User user = userRepository.findByUserName(userName).orElseThrow(()->
-                new UsernameNotFoundException("user not found, login again and then try"));
+        User user = modelMapper.map(userDetails);
 
        return  new ApiResponse<>(true, "here is your post", postService.getPost(postId,user));
     }
 
     @GetMapping("/get-all/posts")
-    public ApiResponse<List<PostResponse>> getAllPosts(@RequestHeader("Authorization") String token){
-        String userName = jwtService.extractUserName(token);
-
-        User user = userRepository.findByUserName(userName).orElseThrow(()->
-                new UsernameNotFoundException("user not found, login again and then try"));
-
+    public ApiResponse<List<PostResponse>> getAllPosts(@AuthenticationPrincipal UserPrincipal userDetails){
+        User user = modelMapper.map(userDetails);
         return  new ApiResponse<>(true, "here is your post", postService.getAllPosts(user));
     }
 
     @PutMapping("/share-post/{postId}")
-    public ApiResponse<PostResponse> sharePost(@RequestHeader("Authorization") String token,
+    public ApiResponse<PostResponse> sharePost(@AuthenticationPrincipal UserPrincipal userDetails,
                                                @PathVariable Long postId){
-
-        String userName = jwtService.extractUserName(token);
-
-        User user = userRepository.findByUserName(userName).orElseThrow(()->
-                new UsernameNotFoundException("user not found, login again and then try"));
+        User user = new User();
 
         return new ApiResponse<>(true, "post shared successfully", postService.sharePost(user, postId));
     }

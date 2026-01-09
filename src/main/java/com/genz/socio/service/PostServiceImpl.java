@@ -115,6 +115,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable(cacheNames = "allposts", key = cacheKey)
     public List<PostResponse> getAllPosts(User user) {
         List<Post> posts= user.getPosts();

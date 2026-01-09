@@ -9,6 +9,7 @@ import com.genz.socio.repo.UserRepository;
 import com.genz.socio.security.JwtService;
 import com.genz.socio.service.ContentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,11 +24,7 @@ public class UserHomeController {
     private final ContentService contentService;
 
     @GetMapping("/home")
-    public ApiResponse<List<PostResponse>> homeContent(@RequestHeader("Authorization") String token){
-        String username = jwtService.extractUserName(token);
-
-        User user = userRepository.findByUserName(username).orElseThrow(()->
-                    new ResourceNotFoundException("user not found"));
+    public ApiResponse<List<PostResponse>> homeContent(@AuthenticationPrincipal User user){
 
         return new ApiResponse<>(true, "random home content", contentService.homeContent(user));
     }

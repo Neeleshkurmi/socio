@@ -1,6 +1,7 @@
 package com.genz.socio.dto.entity;
 
 import com.genz.socio.dto.enums.Role;
+import com.genz.socio.security.UserPrincipal;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
