@@ -1,7 +1,6 @@
 package com.genz.socio.dto.entity;
 
 import com.genz.socio.dto.enums.Role;
-import com.genz.socio.security.UserPrincipal;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -42,7 +41,6 @@ public class User extends BaseEntity{
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
-
 
     public void addPost(Post post) {
         posts.add(post);

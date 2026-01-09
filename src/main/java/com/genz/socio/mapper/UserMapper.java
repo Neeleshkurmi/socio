@@ -2,7 +2,6 @@ package com.genz.socio.mapper;
 
 import com.genz.socio.dto.entity.User;
 import com.genz.socio.dto.response.UserResponse;
-import com.genz.socio.security.UserPrincipal;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,9 +14,5 @@ public class UserMapper {
         userResponse.setEmailOrPhone(user.getEmailOrPhone());
         userResponse.setFullName(user.getFullName());
         return userResponse;
-    }
-
-    public User map(UserPrincipal user){
-        return user.getUser();
     }
 }
