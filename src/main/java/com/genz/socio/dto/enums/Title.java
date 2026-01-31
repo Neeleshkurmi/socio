@@ -6,5 +6,5 @@ public enum Title {
     PROGRAMMER,
     EDITOR,
     DESIGNER,
-    TEACHER,
+    TEACHER, BUSINESS,
 }

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.Set;
 
 @Data
@@ -11,4 +12,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class FollowerListResponse {
     Set<FollowerAndFollowingResponse> followersList;
+
+    public Set<FollowerAndFollowingResponse> getFollowers() {
+        return followersList;
+    }
 }

@@ -28,10 +28,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ProfileService {
 
-    private final JwtService jwtService;
     private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
     private final FollowerAndFollowingMapper followingMapper;
     private final ProfileMapper profileMapper;
 

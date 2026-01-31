@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    @Cacheable(cacheNames = "userdata", key = "#request.emailOrUserName")
+    @Cacheable(cacheNames = "userdata", key = "#request.userName")
     public AuthResponse login(LoginRequest request){
         User user = userRepository.findUserByEmailOrUserName(request.getEmailOrUserName())
                 .orElseThrow(()-> new ResourceNotFoundException("Invalid Credentials"));
@@ -48,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    @Cacheable(cacheNames = "userdata", key = "#request.emailOrUserName")
+    @Cacheable(cacheNames = "userdata", key = "#request.userName")
     public AuthResponse register(RegisterRequest request){
         if (userRepository.findUserByEmailOrUserName(request.getEmailOrPhone()).isPresent()) {
             throw new BadRequestException("User already exists");
