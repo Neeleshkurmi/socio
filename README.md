@@ -8,6 +8,8 @@
 ## 📋 Overview
 
 Socio is a robust, scalable backend API for a modern social media platform built with Spring Boot. This application provides a complete RESTful API for user interactions, content sharing, and social networking features.
+<img width="1728" height="825" alt="image" src="https://github.com/user-attachments/assets/2409532e-a0bc-4788-965d-a4acb162d43b" />
+
 
 ## ✨ Features
 
